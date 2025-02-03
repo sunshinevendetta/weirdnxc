@@ -51,6 +51,7 @@
 
   <!-- Note: Ensure you have a robots.txt and sitemap.xml on your server -->
 
+  <!-- jsmediatags -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
   <style>
     body, html {
@@ -62,7 +63,6 @@
       display: flex;
       flex-direction: column;
     }
-
     nav {
       position: fixed;
       top: 0;
@@ -96,7 +96,6 @@
       left: 20px;
       height: auto;
     }
-
     .music-controls {
       display: flex;
       align-items: center;
@@ -115,7 +114,6 @@
       width: 50px;
       cursor: pointer;
     }
-  
     .menu-toggle {
       font-size: 14px;
       position: absolute;
@@ -132,7 +130,6 @@
       color: #fff;
       transform: scale(1.1);
     }
-  
     .sidebar {
       position: fixed;
       top: 0;
@@ -152,7 +149,6 @@
     .sidebar.open {
       transform: translateX(0);
     }
-   
     .sidebar-close {
       align-self: flex-end;
       font-size: 20px;
@@ -160,7 +156,6 @@
       user-select: none;
       margin-bottom: 8px;
     }
-   
     .sidebar-links a {
       display: block;
       text-decoration: none;
@@ -180,7 +175,6 @@
       color: #fff;
       transform: scale(1.05);
     }
- 
     .music-player {
       display: flex;
       align-items: center;
@@ -218,7 +212,6 @@
       0% { transform: translateX(0); }
       100% { transform: translateX(-100%); }
     }
-   
     .playlist-container {
       display: none;
       background: linear-gradient(90deg, #FF69B4, #FFD700);
@@ -247,7 +240,6 @@
     .playlist-track:hover {
       background: rgba(255, 255, 255, 0.3);
     }
-  
     .content {
       flex: 1;
       margin-top: 0px;
@@ -270,7 +262,6 @@
     .audio-player {
       display: none;
     }
-  
     @media (max-width: 600px) {
       nav {
         flex-direction: row;
@@ -320,6 +311,30 @@
       tracksByAct[act] = [];
     });
 
+    // Use a JSON file to build the track lists
+    function loadTracks() {
+      fetch("music/tracks.json")
+        .then(response => response.json())
+        .then(data => {
+          acts.forEach(act => {
+            const actKey = "ACT" + act;
+            if (data[actKey]) {
+              // Build an array of track objects with full path
+              tracksByAct[act] = data[actKey].tracks.map(filename => ({
+                href: "music/" + actKey + "/" + filename,
+                act: act
+              }));
+              // Optionally, you can store the cover file if needed:
+              // data[actKey].cover holds the cover file name.
+            }
+          });
+          updatePlaylistUI();
+        })
+        .catch(error => {
+          console.error("Error loading tracks.json:", error);
+        });
+    }
+
     function toggleMenu() {
       const sidebar = document.querySelector('.sidebar');
       sidebar.classList.toggle('open');
@@ -332,25 +347,6 @@
         sidebar.classList.remove('open');
       }
     });
-
-    function loadTracks() {
-      acts.forEach(act => {
-        fetch(`music/ACT${act}/`)
-          .then(response => response.text())
-          .then(data => {
-            const parser = new DOMParser();
-            const htmlDoc = parser.parseFromString(data, 'text/html');
-            const files = Array.from(htmlDoc.querySelectorAll('a'))
-              .map(a => ({
-                href: a.href,
-                act: act
-              }))
-              .filter(file => file.href.match(/\.(mp3|wav)$/));
-            tracksByAct[act] = tracksByAct[act].concat(files);
-            updatePlaylistUI();
-          });
-      });
-    }
 
     function togglePlaylistContainer() {
       const plContainer = document.querySelector('.playlist-container');
@@ -505,6 +501,7 @@
         }
       });
     }
+
     window.onload = function() {
       loadTracks();
     };
@@ -538,7 +535,7 @@
     </div>
     <div id="music-player-container" onclick="togglePlaylistOnPlayer()">
       <div class="music-player">
-        <img class="cover-art" src="cover_default.png" alt="Cover Art" />
+        <img class="cover-art" src="cover_default.jpg" alt="Cover Art" />
         <div class="track-info">
           <span class="track-title">No song playing</span>
         </div>
