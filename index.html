@@ -51,8 +51,6 @@
 
   <!-- Note: Ensure you have a robots.txt and sitemap.xml on your server -->
 
-  <!-- jsmediatags -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
   <style>
     body, html {
       margin: 0;
@@ -291,9 +289,10 @@
 
   <!-- Ticker style tab title -->
   <script>
+    // This animates the tab title
     window.addEventListener('load', function() {
-      var titleText = "weird nxc® - stay weird! - Act 7 Out NOW!! 😍 🪩 🔊 ";
-      var speed = 70; 
+      let titleText = "weird nxc® - stay weird! - Act 7 Out NOW!! 😍 🪩 🔊 ";
+      const speed = 70;
       setInterval(function(){
         titleText = titleText.substring(1) + titleText.charAt(0);
         document.title = titleText;
@@ -302,30 +301,43 @@
   </script>
 
   <script>
+    // Global variables
+    let acts = [1, 2, 3, 4, 5, 6, 7];
+    let tracksByAct = {};
     let currentAct = 1;
     let currentTrackIndex = 0;
-    let tracksByAct = {};
-    let acts = [1, 2, 3, 4, 5, 6, 7];
 
+    // Create an object to store each ACT's cover from the JSON
+    let coversByAct = {};
+
+    // Initialize empty arrays for each act
     acts.forEach(act => {
       tracksByAct[act] = [];
     });
 
-    // Use a JSON file to build the track lists
+    // Load the JSON that has an array of objects with filename, title, artist, etc.
     function loadTracks() {
       fetch("music/tracks.json")
         .then(response => response.json())
         .then(data => {
+          // For each ACT we found, store the cover file and build track objects
           acts.forEach(act => {
             const actKey = "ACT" + act;
             if (data[actKey]) {
-              // Build an array of track objects with full path
-              tracksByAct[act] = data[actKey].tracks.map(filename => ({
-                href: "music/" + actKey + "/" + filename,
-                act: act
-              }));
-              // Optionally, you can store the cover file if needed:
-              // data[actKey].cover holds the cover file name.
+              const actData = data[actKey];
+              coversByAct[act] = actData.cover; 
+              // Build array of track objects with full path
+              // We'll store title, artist, etc. from the JSON directly (no jsmediatags).
+              tracksByAct[act] = actData.tracks.map(t => {
+                return {
+                  filename: t.filename,
+                  title: t.title,
+                  artist: t.artist,
+                  album: t.album,
+                  duration: t.duration,
+                  href: `music/${actKey}/${t.filename}`
+                };
+              });
             }
           });
           updatePlaylistUI();
@@ -335,72 +347,73 @@
         });
     }
 
+    // When the audio ends, auto-play the next track
+    window.addEventListener('load', function() {
+      document.querySelector('.audio-player').addEventListener('ended', nextTrack);
+    });
+
+    // Show or hide the sidebar
     function toggleMenu() {
       const sidebar = document.querySelector('.sidebar');
       sidebar.classList.toggle('open');
     }
 
+    // If the user clicks outside the sidebar or burger button, close the sidebar
     document.addEventListener('click', function (event) {
       const sidebar = document.querySelector('.sidebar');
       const burger = document.querySelector('.menu-toggle');
-      if (sidebar.classList.contains('open') && !sidebar.contains(event.target) && !burger.contains(event.target)) {
+      if (sidebar.classList.contains('open') && 
+          !sidebar.contains(event.target) && 
+          !burger.contains(event.target)) {
         sidebar.classList.remove('open');
       }
     });
 
+    // Show or hide the playlist container
     function togglePlaylistContainer() {
       const plContainer = document.querySelector('.playlist-container');
       plContainer.style.display = (plContainer.style.display === 'block') ? 'none' : 'block';
     }
 
+    // If user clicks the music player, we toggle the playlist
     function togglePlaylistOnPlayer() {
       togglePlaylistContainer();
     }
 
+    // Play a specific track
     function playTrack(act, index) {
       const audioPlayer = document.querySelector('.audio-player');
       currentAct = act;
       currentTrackIndex = index;
       const track = tracksByAct[act][index];
+
       audioPlayer.src = track.href;
-      jsmediatags.read(track.href, {
-        onSuccess: function(tag) {
-          const tags = tag.tags;
-          const title = tags.title || track.href.split('/').pop();
-          const artist = tags.artist || "";
-          document.querySelector('.track-title').textContent = title + (artist ? " - " + artist : "");
-          if (tags.picture) {
-            let { data, format } = tags.picture;
-            let base64String = "";
-            for (let i = 0; i < data.length; i++) {
-              base64String += String.fromCharCode(data[i]);
-            }
-            let coverSrc = `data:${format};base64,${btoa(base64String)}`;
-            document.querySelector('.cover-art').src = coverSrc;
-          } else {
-            document.querySelector('.cover-art').src = "cover_default.png";
-          }
-        },
-        onError: function(error) {
-          console.log(error);
-          document.querySelector('.track-title').textContent = track.href.split('/').pop();
-          document.querySelector('.cover-art').src = "cover_default.png";
-        }
-      });
       audioPlayer.play();
+
+      // Update now-playing info from the JSON
+      const displayedTitle = track.title + (track.artist ? " - " + track.artist : "");
+      document.querySelector('.track-title').textContent = displayedTitle;
+
+      // If you want the ACT cover, do this:
+      const actCover = coversByAct[act] || "cover_default.jpg";
+      document.querySelector('.cover-art').src = `music/ACT${act}/${actCover}`; 
+      // If you prefer a default fallback, check if it actually exists first, etc.
     }
 
+    // Next track
     function nextTrack() {
       if (tracksByAct[currentAct].length === 0) return;
       if (currentTrackIndex < tracksByAct[currentAct].length - 1) {
         playTrack(currentAct, currentTrackIndex + 1);
       } else {
+        // Move on to the next ACT, or wrap around
         let currentActIndex = acts.indexOf(currentAct);
         let nextActIndex = (currentActIndex + 1) % acts.length;
         let nextAct = acts[nextActIndex];
         if (tracksByAct[nextAct] && tracksByAct[nextAct].length > 0) {
           playTrack(nextAct, 0);
         } else {
+          // If nextAct has no tracks, keep searching
           for (let i = 1; i <= acts.length; i++) {
             let candidate = acts[(nextActIndex + i - 1) % acts.length];
             if (tracksByAct[candidate] && tracksByAct[candidate].length > 0) {
@@ -412,17 +425,20 @@
       }
     }
 
+    // Previous track
     function prevTrack() {
       if (tracksByAct[currentAct].length === 0) return;
       if (currentTrackIndex > 0) {
         playTrack(currentAct, currentTrackIndex - 1);
       } else {
+        // Go to the previous ACT
         let currentActIndex = acts.indexOf(currentAct);
         let prevActIndex = (currentActIndex - 1 + acts.length) % acts.length;
         let prevAct = acts[prevActIndex];
         if (tracksByAct[prevAct] && tracksByAct[prevAct].length > 0) {
           playTrack(prevAct, tracksByAct[prevAct].length - 1);
         } else {
+          // If that ACT has no tracks, keep searching
           for (let i = 1; i <= acts.length; i++) {
             let candidate = acts[(prevActIndex - i + acts.length) % acts.length];
             if (tracksByAct[candidate] && tracksByAct[candidate].length > 0) {
@@ -434,9 +450,11 @@
       }
     }
 
+    // Random track among all available ACTs
     function playRandomTrack() {
       let availableActs = acts.filter(act => tracksByAct[act] && tracksByAct[act].length > 0);
       if (availableActs.length === 0) {
+        // If no acts loaded yet, load them first
         loadTracks();
         setTimeout(() => {
           playRandomTrack();
@@ -448,9 +466,11 @@
       playTrack(randomAct, randomIndex);
     }
 
+    // Play or pause
     function playPause() {
       const audioPlayer = document.querySelector('.audio-player');
       if (!audioPlayer.src || audioPlayer.src === "") {
+        // If no track is loaded, start from ACT1 track0 (example)
         if (tracksByAct[1] && tracksByAct[1].length > 0) {
           playTrack(1, 0);
         }
@@ -461,16 +481,20 @@
       }
     }
 
+    // Adjust volume
     function setVolume(vol) {
       const audioPlayer = document.querySelector('.audio-player');
       audioPlayer.volume = vol;
     }
 
+    // Build the playlist UI from the JSON data
     function updatePlaylistUI() {
       const container = document.getElementById('playlist-container');
-      container.innerHTML = "";
+      container.innerHTML = ""; // Clear old content
+
       acts.forEach(act => {
         if (tracksByAct[act].length > 0) {
+          // ACT header
           const actHeader = document.createElement('div');
           actHeader.className = 'playlist-act-header';
           actHeader.textContent = `ACT ${act}`;
@@ -478,24 +502,18 @@
             playTrack(act, 0);
           };
           container.appendChild(actHeader);
+
+          // For each track, display "title - artist"
           tracksByAct[act].forEach((track, index) => {
             const trackItem = document.createElement('div');
             trackItem.className = 'playlist-track';
-            trackItem.textContent = track.href.split('/').pop();
+            // Display "title - artist" or fallback to filename
+            const displayed = track.title + (track.artist ? " - " + track.artist : "");
+            trackItem.textContent = displayed;
+
             trackItem.onclick = function() {
               playTrack(act, index);
             };
-            jsmediatags.read(track.href, {
-              onSuccess: function(tag) {
-                const tags = tag.tags;
-                const title = tags.title || track.href.split('/').pop();
-                const artist = tags.artist || "";
-                trackItem.textContent = title + (artist ? " - " + artist : "");
-              },
-              onError: function(error) {
-                console.log(error);
-              }
-            });
             container.appendChild(trackItem);
           });
         }
@@ -519,13 +537,22 @@
         <span class="control" onclick="nextTrack()">⏭️</span>
         <span class="control" onclick="playRandomTrack()">🔀</span>
         <span class="volume-label">🔊</span>
-        <input type="range" min="0" max="1" step="0.01" value="1" class="volume-slider" onchange="setVolume(this.value)" />
+        <input 
+          type="range" 
+          min="0" 
+          max="1" 
+          step="0.01" 
+          value="1" 
+          class="volume-slider" 
+          onchange="setVolume(this.value)" 
+        />
       </div>
     </div>
     <div class="nav-right">
       <span class="menu-toggle" onclick="toggleMenu()">☰</span>
     </div>
   </nav>
+
   <div class="sidebar">
     <span class="sidebar-close" onclick="toggleMenu()">✖</span>
     <div class="sidebar-links">
@@ -533,6 +560,7 @@
       <a href="https://linktr.ee/weirdnxc" target="_blank">Contact</a>
       <a href="javascript:void(0)" onclick="togglePlaylistContainer()">Playlist</a>
     </div>
+
     <div id="music-player-container" onclick="togglePlaylistOnPlayer()">
       <div class="music-player">
         <img class="cover-art" src="cover_default.jpg" alt="Cover Art" />
@@ -543,12 +571,16 @@
     </div>   
     <div id="playlist-container" class="playlist-container"></div>
   </div>
+
   <div class="content">
     <iframe src="https://awe.box/weirdnxc"></iframe>
   </div>
+
   <footer>
     &copy; 2025 WeirdNXC. All rights reserved, design by @sunshinevendetta.
   </footer>
-  <audio class="audio-player"></audio>
+
+  <!-- Our audio element: crossOrigin for possible remote hosting -->
+  <audio class="audio-player" crossorigin="anonymous"></audio>
 </body>
 </html>
