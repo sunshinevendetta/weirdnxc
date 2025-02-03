@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://weirdnxc.fun/sitemap.xml
