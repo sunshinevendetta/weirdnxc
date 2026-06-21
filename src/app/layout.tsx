@@ -5,6 +5,7 @@ import {
   Mochiy_Pop_One,
   Space_Mono,
 } from "next/font/google";
+import TabTitleMarquee from "@/components/weirdnxc/TabTitleMarquee";
 import "./globals.css";
 
 const bagel = Bagel_Fat_One({
@@ -32,9 +33,17 @@ const space = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "weirdnxc - stay weird",
+  title: "💖 weirdnxc - stay weird ✨",
   description:
     "Weird NXC label site with ACT releases, roster credits, full playlists, and booking contact.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -47,7 +56,10 @@ export default function RootLayout({
       lang="en"
       className={`${bagel.variable} ${mochiy.variable} ${baloo.variable} ${space.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <TabTitleMarquee />
+        {children}
+      </body>
     </html>
   );
 }
