@@ -1,0 +1,334 @@
+.root {
+  --player-pink: var(--pink, #ff45c0);
+  --player-cyan: var(--cyan, #34d6ff);
+  --player-lime: var(--lime, #aef23a);
+  --player-ink: var(--ink, #44104f);
+  --player-muted: var(--muted, #9a5fb0);
+  --player-line: var(--line-2, rgba(120, 30, 150, 0.3));
+  --player-panel: var(--panel, rgba(255, 255, 255, 0.66));
+  --player-fill: var(--fill, rgba(150, 40, 170, 0.07));
+  color: var(--player-ink);
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
+
+.shell {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 241, 252, 0.72)),
+    var(--player-panel);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow:
+    0 18px 42px rgba(150, 40, 170, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  display: grid;
+  gap: 14px;
+  overflow: hidden;
+  padding: 14px;
+}
+
+.topGrid {
+  align-items: stretch;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+}
+
+.now {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 88px minmax(0, 1fr);
+  min-width: 0;
+}
+
+.art {
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.85), transparent 38%),
+    linear-gradient(135deg, var(--player-pink), var(--player-cyan), var(--player-lime));
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(150, 40, 170, 0.22);
+  overflow: hidden;
+  position: relative;
+}
+
+.artImage {
+  object-fit: cover;
+}
+
+.fallbackArt {
+  align-items: center;
+  color: #ffffff;
+  display: grid;
+  font-size: 28px;
+  font-weight: 900;
+  height: 100%;
+  justify-items: center;
+  text-shadow: 0 2px 8px rgba(70, 20, 90, 0.4);
+  width: 100%;
+}
+
+.eyebrow {
+  color: var(--player-muted);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: var(--font-head, ui-sans-serif, system-ui, sans-serif);
+  font-size: clamp(18px, 2vw, 26px);
+  font-weight: 900;
+  line-height: 1.08;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  color: var(--player-muted);
+  font-size: 14px;
+  line-height: 1.35;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+}
+
+.nextPanel {
+  background: rgba(255, 255, 255, 0.48);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.nextTrack {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 46px minmax(0, 1fr);
+}
+
+.miniArt {
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, var(--player-cyan), var(--player-pink));
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.trackLine,
+.trackSubline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trackLine {
+  font-weight: 900;
+}
+
+.trackSubline {
+  color: var(--player-muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.button {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  color: var(--player-ink);
+  display: inline-flex;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 36px;
+  padding: 8px 12px;
+  transition:
+    background 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+.button:hover {
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(52, 214, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.button[aria-pressed='true'],
+.buttonActive {
+  background: linear-gradient(135deg, var(--player-pink), var(--player-cyan));
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(80, 10, 80, 0.28);
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, var(--player-pink), var(--player-cyan), var(--player-lime));
+  color: #ffffff;
+  min-width: 92px;
+  text-shadow: 0 1px 2px rgba(80, 10, 80, 0.32);
+}
+
+.progressRow {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+}
+
+.time {
+  color: var(--player-muted);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.range {
+  accent-color: var(--player-pink);
+  min-width: 0;
+  width: 100%;
+}
+
+.volumeRow {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  min-width: 180px;
+}
+
+.error {
+  background: rgba(255, 69, 192, 0.13);
+  border: 1px solid rgba(255, 69, 192, 0.32);
+  border-radius: 8px;
+  color: var(--player-ink);
+  font-size: 13px;
+  padding: 9px 10px;
+}
+
+.drawer {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.54)),
+    var(--player-fill);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  max-height: min(62vh, 620px);
+  overflow: auto;
+  padding: 12px;
+}
+
+.drawerHeader {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.drawerTitle {
+  font-family: var(--font-head, ui-sans-serif, system-ui, sans-serif);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.group {
+  display: grid;
+  gap: 7px;
+}
+
+.groupTitle {
+  color: var(--player-muted);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.trackButton {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: inherit;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 32px minmax(0, 1fr) 52px;
+  min-height: 48px;
+  padding: 8px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.trackButton:hover,
+.trackButtonActive {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(52, 214, 255, 0.46);
+}
+
+.trackNumber {
+  color: var(--player-muted);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.empty {
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  color: var(--player-muted);
+  padding: 18px;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .topGrid,
+  .now {
+    grid-template-columns: 1fr;
+  }
+
+  .art {
+    max-width: 160px;
+  }
+
+  .controls {
+    align-items: stretch;
+  }
+
+  .button {
+    flex: 1 1 auto;
+  }
+
+  .volumeRow {
+    margin-left: 0;
+    min-width: 100%;
+  }
+
+  .progressRow {
+    grid-template-columns: 38px minmax(0, 1fr) 38px;
+  }
+}

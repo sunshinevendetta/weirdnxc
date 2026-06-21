@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="118 334 752 388" role="img" aria-labelledby="title desc">
+  <title id="title">Weird NXC logo</title>
+  <desc id="desc">Official Weird NXC logo with animated-ready gradient, glow, and color filters.</desc>
+  <defs>
+    <linearGradient id="nxc-rainbow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#aef23a">
+        <animate attributeName="stop-color" values="#aef23a;#34d6ff;#ff45c0;#aef23a" dur="6s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="18%" stop-color="#ffe23d">
+        <animate attributeName="stop-color" values="#ffe23d;#aef23a;#c79bff;#ffe23d" dur="7s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="35%" stop-color="#ff9a47">
+        <animate attributeName="stop-color" values="#ff9a47;#ff45c0;#34d6ff;#ff9a47" dur="6.5s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="52%" stop-color="#ff45c0">
+        <animate attributeName="stop-color" values="#ff45c0;#c79bff;#ffe23d;#ff45c0" dur="5.8s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="70%" stop-color="#c79bff">
+        <animate attributeName="stop-color" values="#c79bff;#8effc6;#ff45c0;#c79bff" dur="6.8s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="86%" stop-color="#34d6ff">
+        <animate attributeName="stop-color" values="#34d6ff;#ffe23d;#8effc6;#34d6ff" dur="7.2s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#8effc6">
+        <animate attributeName="stop-color" values="#8effc6;#ff45c0;#aef23a;#8effc6" dur="6.2s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    <filter id="nxc-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur">
+        <animate attributeName="stdDeviation" values="6;12;6" dur="3.8s" repeatCount="indefinite"/>
+      </feGaussianBlur>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 1  0 1 0 0 .25  0 0 1 0 .82  0 0 0 .75 0" result="color"/>
+      <feMerge>
+        <feMergeNode in="color"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="nxc-chrome" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#4d155f" flood-opacity=".45"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#34d6ff" flood-opacity=".55"/>
+    </filter>
+    <mask id="nxc-mask">
+      <image href="/weirdnxc-logo-bw.png" width="1024" height="1024" preserveAspectRatio="xMidYMid meet"/>
+    </mask>
+  </defs>
+  <rect width="1024" height="1024" fill="transparent"/>
+  <g filter="url(#nxc-glow)">
+    <animateTransform attributeName="transform" type="translate" values="0 0; 0 -4; 0 0" dur="4.4s" repeatCount="indefinite"/>
+    <rect width="1024" height="1024" fill="url(#nxc-rainbow)" mask="url(#nxc-mask)" opacity=".9"/>
+  </g>
+  <image href="/weirdnxc-logo.png" width="1024" height="1024" preserveAspectRatio="xMidYMid meet" filter="url(#nxc-chrome)">
+    <animateTransform attributeName="transform" type="translate" values="0 0; 0 -3; 0 0" dur="4.4s" repeatCount="indefinite"/>
+  </image>
+</svg>
